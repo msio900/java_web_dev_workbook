@@ -1,5 +1,8 @@
 # 🖥자바 웹 개발 워크북 STUDY
 > 이 레포지토리는 <자바 웹 개발 워크북> STUDY 내용을 정리하였습니다.
+>
+> 저 자 : 엄진영 [@eomjinyoung](https://github.com/eomjinyoung/JavaWebProgramming)
+
 ## The people who studied with me🤝<a id="people"></a>
 * 🤝찬구[@cgkim449](https://github.com/cgkim449)
 * 🤝준오[@ChoJunOh](https://github.com/ChoJunOh)
