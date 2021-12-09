@@ -9,14 +9,14 @@
   * 1_4 HTTP 응답[✏](#1_4)
   * 1_5 HTTP 클라이언트만들기[✏](#1_5)
   * 1_6 콘솔창의 출력 크기를 늘리거나 제한을 없애기[✏](#1_6)
-* 2_ GET 요청
-  * 2_1 웹 애플리케이션 프로젝트 생성, 배치, 실행
-  * 2_2 GET 요청 1 - 웹 브라우저 주소창에 URL을 입력하는 경우
-  * 2_3 GET 요청 2 — 링크를 클릭하는 경우
-  * 2_4 GET 요청 3 — 입력 폼의 method 속성값이 get인 경우
-  * 2_5 GET 요청의데이터 전달 형식
-  * 2_6 GET 요청의쓰임새
-  * 2_7 문제점과개선방안
+* 2_ GET 요청[👉](#2_)
+  * 2_1 웹 애플리케이션 프로젝트 생성, 배치, 실행[✏](#2_1)
+  * 2_2 GET 요청 1 - 웹 브라우저 주소창에 URL을 입력하는 경우[✏](#2_2)
+  * 2_3 GET 요청 2 - 링크를 클릭하는 경우[✏](#2_3)
+  * 2_4 GET 요청 3 - 입력 폼의 method 속성값이 get인 경우[✏](#2_4)
+  * 2_5 GET 요청의 데이터 전달 형식[✏](#2_5)
+  * 2_6 GET 요청의 쓰임새[✏](#2_6)
+  * 2_7 문제점과 개선 방안[✏](#2_7)
 * 3_ POST 요청
   * 3_1 POST 요청의 장점 - 입력값을 URLOII 노출하지 않는다.
   * 3_2 POST 요청의 HTTP 프로토콜 확인
@@ -256,6 +256,131 @@ HTTP 프록시 프로그램 : 웹 브라우저와 웹 서버 사이에 주고받
 
 ### 1_5 HTTP 클라이언트만들기[📑](#contents)<a id='1_5'></a>
 
+ 클라이언트와 서버가 주고받는 데이터 형식만 안다면 누구나 클라이언트나 서버를 개발할 수 있습니다. 이제 HTTP 프로토콜을 배웠으니 간단히 HTTP 클라이언트를 만들어 보겠습니다.
 
+#### 7. web02 프로젝트의 자바 소스 패키지 'lesson02' 아래에 'client' 패키지를 생성 `client` 패키지 아래에 `SimpleHttpClient` 클래스를 생성
+
+![](./image/2_10.png)
+
+> **그림 2-10** SimpleHttpClientjava 소스 파일
+
+#### 8. SimpleHttpClient 클래스를 작성
+
+```java
+package lesson02.client;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.net.Socket;
+
+public class SimpleHttpClient {
+
+	public static void main(String[] args) throws Exception {
+        //1. 소켓 및 입출력 스트림 준비
+		Socket socket = new Socket("www.hani.co.kr", 80);
+		BufferedReader in = new BufferedReader(
+				new InputStreamReader(socket.getInputStream()));
+		PrintStream out = new PrintStream(
+				socket.getOutputStream());
+
+		//2. 요청라인
+		out.println("GET / HTTP/1.1");
+
+		//3. 헤더정보
+		out.println("Host: www.hani.co.kr");
+		out.println("User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_0)"
+				+ " AppleWebKit/537.36 (KHTML, like Gecko)"
+				+ " Chrome/30.0.1599.101 Safari/537.36");
+		//4. 공백라인
+		out.println();
+        
+		//5. 응답 내용 출력
+		String line = null;
+		while((line = in.readLine()) != null) {
+			System.out.println(line);
+		}
+
+		in.close();
+		out.close();
+		socket.close();
+	}
+
+}
+```
+
+> SimpleHttpClient.java
+
+1. 접속할 웹 서버는 ’다음’ 사이트입니다. 웹 서버의 기본 포트번호는 80이기 때문에 접속할 서버 의 포트번호를 80으로 지정합니다. 그리고 소켓으로 입·출력을 하기 위한 객체를 준비합니다.
+2. 먼저 서버에게 수행할 작업을 알려주는 요청라인을 보냅니다. 요청 형식은 GET, 원하는 자 원은 웹 서버 루트 폴더에 있는 기본 문서(/), 사용할 프로토콜은 HTTP, 버전은 1.1입니다. 
+3. 웹 서버에 부가 정보를 보냅니다. 접속하려는 웹 서버의 주소는 www.daum.net, 요청자의 정 보는 크롬 브라우저라고 설정합니다. ’다음' 웹 서버는 `Host`, `User-Agent` 이렇게 두 가지 헤더 만 보내도 정상적으로 응답해 주네요. 
+4. 요청의 끝을 표시하기 위해 공백 라인을 보냅니다. 
+5. 서버로부터 받은 데이터를 라인 단위로 읽어서 출력합니다
+
+#### 9. ’다음’ 웹 서버로부터 받은 데이터가 ’Console’ 뷰로 출력됨.
+
+![](./image/2_12.png)
+
+> **그림2-12** www.daum.net의 응답 결과
+
+#### 10. 다음 그림과 같이 ’다음’ 웹 서버로부터 받은 데이터가 ’Console’ 뷰로 출력될 것입니다.
+
+* 첫 라인은 응답 상태정보
+* 두 번째 라인부터 공백 라 인까지는 헤더들
+* 공백 라인 다음에는 HTML로 된 본문 데이터
 
 ### 1_6 콘솔창의 출력 크기를 늘리거나 제한을 없애기[📑](#contents)<a id='1_6'></a>
+
+ 만약 콘솔 뷰(console View)의 출력 결과가 짤린다면, 다음의 절차에 따라 콘솔 뷰의 출력 크기를 늘리거나 제한을 없애면 됨
+
+#### 11. 콘솔 뷰의 컨텍스트 메뉴를 띄움
+
+![](./image/2_13.png)
+
+> **그림2-13** 콘솔의 설정창 열기
+
+#### 12. 콘솔 뷰의 속성 설정창에서 다음 그림과 같이 출력 크기를 제한하는 항목(Limit console output)의 체크 상자를 해제
+
+![](./image/2_14.png)
+
+> **그림2-14** 콘솔 설정창에서 출력 라인 수의 제한 해제
+
+>  널리 알려진 프로토콜 몇 가지를 간단히 살펴보도록 하겠습니다. 다음에 언급하는 프로토콜은 개발 세계에 몸담고 있는 동안 자주 듣게 될 것입니다.
+>
+> | 프로토콜                                         | 내용                                                         |
+> | ------------------------------------------------ | ------------------------------------------------------------ |
+> | FTP(File Transfer Protocol)                      | 클라이언트와 서버 간에 파일을 주고받기 위해 만든 통신 규약입니다. |
+> | Telnet 프로토콜                                  | 인터넷이나 LAN(Local Area Network) 상에서 문자 기반 으로 원격의 컴퓨터를 제어하기 위해 만든 통신 규약입니 다. 요즘은 보안 때문에 SSH(Secure Shell) 프로토콜 기 반 원격 접속 프로그램을 주로 사용합니다. |
+> | XMPP(Extensible Messaging and Presence Protocol) | 인스턴스 메시지 및 사용자의 접속 상태 정보를 교환할 목 적으로 만든 통신 규약이며 Goo임e Talk가 이 프로토콜을 i 기반으로 통신합니 다. |
+> | SMTP(Simple Mail Transfer Protocol)              | 인터넷 상에서 메일을 보내기 위한 통신 규약입니다. POP3(Post Office Protocol version 3)는 이메일을 가져 오는 데 사용하는 통신 규약이며 POP3는 이메일을 가져온 후 서버의 메일을 삭제합니다. |
+> | IMAPdnternet Message Access Protocol)            | POP3와 달리 이메일을 가져온 뒤에 서버의 메일으르 지우 지 않으며 요즘처럼 여러 대의 장비에서 이메일을 조회하는 경우에 적합합니다. 단, POP3에 비해 통신 트래픽이 높은 것이 단점입니다. |
+> | LDAP(Lightweight Directory Access Protocol)      | 디렉터리 서비스에 등록된 자원들을 찾는 통신 규약입니다.      |
+> | IRCdnternet Relay Chat)                          | 실시간 채팅을 위해 만든 통신 규약입니다.                     |
+
+## 2_ GET 요청[📑](#contents)<a id='2'></a>
+### 2_1 웹 애플리케이션 프로젝트 생성, 배치, 실행[📑](#contents)<a id='2_1'></a>
+
+
+
+### 2_2 GET 요청 1 - 웹 브라우저 주소창에 URL을 입력하는 경우[📑](#contents)<a id='2_2'></a>
+
+
+
+### 2_3 GET 요청 2 - 링크를 클릭하는 경우[📑](#contents)<a id='2_3'></a>
+
+
+
+### 2_4 GET 요청 3 - 입력 폼의 method 속성값이 get인 경우[📑](#contents)<a id='2_4'></a>
+
+
+
+### 2_5 GET 요청의 데이터 전달 형식[📑](#contents)<a id='2_5'></a>
+
+
+
+### 2_6 GET 요청의 쓰임새[📑](#contents)<a id='2_6'></a>
+
+
+
+### 2_7 문제점과 개선 방안[📑](#contents)<a id='2_7'></a>
+
